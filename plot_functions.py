@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 class Subplots(object):
 
     def __init__(self, rows, cols):
-        figure , plots = plt.subplots(rows, cols)
+        figure, plots = plt.subplots(rows, cols)
         self.plots = plots
         self.rows = rows
         self.cols = cols
@@ -18,4 +18,12 @@ class Subplots(object):
         self.plots[position].set_ylabel(y_label if y_label is not None else "")
 
     def show(self):
+        plt.tight_layout()
         self.figure.show()
+
+    def save_fig(self, filename):
+        plt.tight_layout()
+        self.figure.savefig(filename)
+
+    def close(self):
+        plt.close(self.figure)

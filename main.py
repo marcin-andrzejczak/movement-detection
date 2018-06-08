@@ -4,12 +4,14 @@ import numpy as np
 import csv
 
 # Constants
-NUMBER_OF_OUTER_ENVELOPE_ITERATIONS = 2
-NUMBER_OF_SMOOTHENING_ITERATIONS = 1
+NUMBER_OF_OUTER_ENVELOPE_ITERATIONS = 2     # Best: 2
+NUMBER_OF_SMOOTHENING_ITERATIONS = 1        # Best: 1
 MOVEMENT_THRESHOLD_DIVIDER = 5
+SAVE_PLOTS_DIRECTORY = "Results/"
 FILENAMES = ["mydata.csv",
              "more_complicated_data.csv",
              "complicated_without_step.csv"]
+CURRENT_FILENAME = ""
 
 
 def read_data(filename, delimiter=",", newline=''):
@@ -51,13 +53,30 @@ def analyze_data(x_axis, tx, ty, tz):
     plots.add_plot(0, 0, x_axis, resultant, "Resultant", "Time", "Resultant")
     plots.add_plot(1, 0, env_x, env_y, "Envelope", "Time", "Envelope")
     plots.add_plot(2, 0, movement_x, movement_y, "Movement", "Time", "Movement")
-    plots.show()
+    plots.save_fig(SAVE_PLOTS_DIRECTORY+CURRENT_FILENAME+"_"
+                   "ENV"+str(NUMBER_OF_OUTER_ENVELOPE_ITERATIONS)+"_"
+                   "SMO"+str(NUMBER_OF_SMOOTHENING_ITERATIONS)+"_"
+                   "THR"+str(MOVEMENT_THRESHOLD_DIVIDER)+".png")
+    plots.close()
 
 
 def main():
-    for name in FILENAMES:
-        time, fx, fy, fz = read_data("data/"+name)
-        analyze_data(time, fx, fy, fz)
+    global NUMBER_OF_OUTER_ENVELOPE_ITERATIONS
+    global NUMBER_OF_SMOOTHENING_ITERATIONS
+    global MOVEMENT_THRESHOLD_DIVIDER
+    global CURRENT_FILENAME
+
+    for envIter in [0, 1, 2, 3, 4]:
+        NUMBER_OF_OUTER_ENVELOPE_ITERATIONS = envIter
+        for smoothIter in [0, 1, 2, 3, 4]:
+            NUMBER_OF_SMOOTHENING_ITERATIONS = smoothIter
+            for movThreshDiv in [2, 3, 4, 5, 6]:
+                MOVEMENT_THRESHOLD_DIVIDER = movThreshDiv
+                for name in FILENAMES:
+                    CURRENT_FILENAME = name
+                    time, fx, fy, fz = read_data("data/"+name)
+                    analyze_data(time, fx, fy, fz)
 
 
 main()
+print("END")
